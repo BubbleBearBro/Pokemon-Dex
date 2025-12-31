@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Region Maps | Livingdex Tracker</title>
+    <style>
+        body { 
+            background: #0b132b; 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 50px 20px; 
+            margin: 0;
+        }
+
+        h1 { text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 40px; }
+
+        .map-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; 
+            gap: 25px; 
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .map-card {
+            background: #1c2541;
+            border: 2px solid #1e3a5f;
+            border-radius: 18px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+            flex: 0 1 340px; 
+            box-sizing: border-box;
+        }
+
+        .map-card:hover { 
+            border-color: #4cc9f0; 
+            transform: translateY(-5px); 
+        }
+
+        .map-card img {
+            width: 100%;
+            aspect-ratio: 16/9; 
+            object-fit: cover;
+            background: #0d1b2a;
+            display: block;
+            border-bottom: 2px solid #1e3a5f;
+        }
+
+        .map-label {
+            padding: 20px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .region-title { font-weight: bold; font-size: 1.1rem; color: #4cc9f0; text-transform: uppercase; }
+        .game-subtitle { font-size: 0.85rem; color: #8d99ae; margin-top: 6px; font-style: italic; }
+
+        .btn-outline { 
+            margin-top: 50px;
+            background: transparent; 
+            color: #8d99ae; 
+            border: 1px solid #1e3a5f; 
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .btn-outline:hover { border-color: #4cc9f0; color: #4cc9f0; }
+
+        @media (max-width: 600px) { .map-card { flex: 0 1 100%; } }
+    </style>
+</head>
+<body>
+
+    <h1>Region Maps</h1>
+
+    <div class="map-grid">
+        <a href="kanto-map.html" class="map-card">
+            <img src="https://40k.zombiecrisis.org/map-kanto-classic.png">
+            <div class="map-label">
+                <div class="region-title">Generation 1: Kanto</div>
+                <div class="game-subtitle">Red / Blue / Yellow</div>
+            </div>
+        </a>
+
+        <a href="hoenn-map.html" class="map-card">
+            <img src="https://www.40k.zombiecrisis.org/map-hoenn.png">
+            <div class="map-label">
+                <div class="region-title">Generation 3: Hoenn</div>
+                <div class="game-subtitle">Omega Ruby / Alpha Sapphire</div>
+            </div>
+        </a>
+
+        <a href="kalos-map.html" class="map-card">
+            <img src="https://www.40k.zombiecrisis.org/map.png">
+            <div class="map-label">
+                <div class="region-title">Generation 6: Kalos</div>
+                <div class="game-subtitle">Pokemon X & Y</div>
+            </div>
+        </a>
+        <div class="map-card">
+            <img src="https://via.placeholder.com/400x225?text=Coming+Soon">
+         <div class="map-label">
+                <div class="region-title">More Regions Coming Soon!</div>
+                <div class="game-subtitle">Stay Tuned for Updates</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" class="btn-outline">Return to Home</a>
+
+</body>
+</html>
