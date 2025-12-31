@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select a Version</title>
+    <style>
+        body { background: #0d1b2a; color: white; font-family: sans-serif; text-align: center; padding: 50px; }
+        
+        /* Grid Container */
+        .selection-grid { 
+            display: flex; /* Using flex for easier horizontal distribution of the last row */
+            flex-wrap: wrap;
+            justify-content: center; /* This centers the items in the last row */
+            gap: 30px; 
+            max-width: 1000px; 
+            margin: 0 auto 50px auto; 
+        }
+
+        /* Logic to maintain the 4-column look while allowing centering */
+        .option { 
+            cursor: pointer; 
+            transition: 0.2s; 
+            padding: 10px; 
+            border-radius: 15px;
+            width: calc(25% - 30px); /* Sets base width to 1/4 of the row minus gap */
+            min-width: 180px; /* Prevents them from getting too small */
+            box-sizing: border-box;
+        }
+
+        .option:hover { background: #1b263b; transform: translateY(-5px); }
+        .option img { width: 100%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .option p { margin-top: 10px; font-weight: bold; color: #4cc9f0; }
+        
+        .back-btn { display: inline-block; margin-bottom: 30px; color: white; text-decoration: none; }
+
+        /* Section for Home */
+        .section-divider {
+            margin: 40px auto 20px auto;
+            max-width: 1000px;
+            border-top: 1px solid #1b263b;
+            padding-top: 20px;
+            font-size: 1.2rem;
+            color: #8d99ae;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .home-grid {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+
+        .home-grid .option {
+            width: 220px;
+        }
+        .btn-group { margin-top: 50px; display: flex; gap: 20px; margin-bottom: 20px; }
+        .btn { padding: 12px 30px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.2s; font-family: inherit; }
+        
+        .btn-black { background: #000000; color: white; border: 1px solid #4cc9f0; }
+        .btn-white { background: white; color: black; border: 1px solid white; }
+        
+        /* New Return Home Button Style */
+        .btn-outline { 
+            background: transparent; 
+            color: #005dfd; 
+            border: 1px solid #0464e2; 
+            font-size: 0.85rem;
+            padding: 12px 60px;
+        }
+        .btn-outline:hover { border-color: #4cc9f0; color: #4cc9f0; }
+
+        .btn:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <a href="dex.html" class="btn btn-black">← Back to living Dex Home</a>
+    <h1>Create a New Living Dex</h1>
+
+    <div class="selection-grid" id="picker-grid"></div>
+
+    <div class="section-divider">Optional</div>
+    <div class="home-grid" id="home-grid"></div>
+
+    <script>
+        const versions = [
+            { name: "Red", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Frb-r.jpeg&w=256&q=75" },
+            { name: "Blue", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Frb-b.jpeg&w=640&q=75" },
+            { name: "Yellow", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fy.jpeg&w=256&q=75" },
+            { name: "Gold", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fgs-g.jpeg&w=256&q=75" },
+            { name: "Silver", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fgs-s.jpeg&w=256&q=75" },
+            { name: "Crystal", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fc.jpeg&w=256&q=75" },
+            { name: "Ruby", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Frs-r.jpeg&w=256&q=75" },
+            { name: "Sapphire", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Frs-s.jpeg&w=256&q=75" },
+            { name: "Emerald", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fe.jpeg&w=256&q=75" },
+            { name: "FireRed", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Ffrlg-fr.jpeg&w=256&q=75" },
+            { name: "LeafGreen", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Ffrlg-lg.jpeg&w=256&q=75" },
+            { name: "Diamond", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fdp-d.jpeg&w=256&q=75" },
+            { name: "Pearl", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fdp-p.jpeg&w=256&q=75" },
+            { name: "Platinum", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fpt.jpeg&w=256&q=75" },
+            { name: "HeartGold", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fhgss-hg.jpeg&w=256&q=75" },
+            { name: "SoulSilver", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fhgss-ss.jpeg&w=256&q=75" },
+            { name: "Black", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fbw-b.jpeg&w=256&q=75" },
+            { name: "White", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fbw-w.jpeg&w=256&q=75" },
+            { name: "Black 2", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fb2w2-b2.jpeg&w=256&q=75" },
+            { name: "White 2", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fb2w2-w2.jpeg&w=256&q=75" },
+            { name: "X", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fxy-x.jpeg&w=256&q=75" },
+            { name: "Y", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fxy-y.jpeg&w=256&q=75" },
+            { name: "Omega Ruby", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Foras-or.jpeg&w=256&q=75" },
+            { name: "Alpha Sapphire", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Foras-as.jpeg&w=256&q=75" },
+            { name: "Sun", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fsm-s.jpeg&w=256&q=75" },
+            { name: "Moon", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fsm-m.jpeg&w=256&q=75" },
+            { name: "Ultra Sun", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fusum-us.jpeg&w=256&q=75" },
+            { name: "Ultra Moon", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fusum-um.jpeg&w=256&q=75" },
+            { name: "Lets Go Pikachu", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Flgpe-lgp.jpeg&w=256&q=75" },
+            { name: "Lets Go Eevee", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Flgpe-lge.jpeg&w=256&q=75" },
+            { name: "Sword", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fswsh-sw.jpeg&w=256&q=75" },
+            { name: "Shield", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fswsh-sh.jpeg&w=256&q=75" },
+            { name: "Brilliant Diamond", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fbdsp-bd.jpeg&w=256&q=75" },
+            { name: "Shining Pearl", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fbdsp-sp.jpeg&w=256&q=75" },
+            { name: "Legends: Arceus", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fla.jpeg&w=256&q=75" },
+            { name: "Scarlet", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fsv-s.jpeg&w=256&q=75" },
+            { name: "Violet", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fsv-v.jpeg&w=256&q=75" },
+            { name: "Z-A" , img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Flza.jpeg&w=256&q=75" },
+            { name: "Pokémon HOME", img: "https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Fhome.jpeg&w=256&q=75" }
+        ];
+
+        const mainGrid = document.getElementById('picker-grid');
+        const homeGrid = document.getElementById('home-grid');
+
+        const gamesOnly = versions.filter(v => v.name !== "Pokémon HOME");
+        const homeOnly = versions.filter(v => v.name === "Pokémon HOME");
+
+        function createOptionHtml(v) {
+            return `
+                <div class="option" onclick="addThis('${v.name}', '${v.img}')">
+                    <img src="${v.img}">
+                    <p>${v.name}</p>
+                </div>
+            `;
+        }
+
+        mainGrid.innerHTML = gamesOnly.map(createOptionHtml).join('');
+        homeGrid.innerHTML = homeOnly.map(createOptionHtml).join('');
+
+        function addThis(name, img) {
+    // 1. Get the current list of games
+    const savedGames = JSON.parse(localStorage.getItem('myDexes') || '[]');
+
+    // 2. Check if a game with this name already exists
+    const alreadyExists = savedGames.some(game => game.name === name);
+
+    if (alreadyExists) {
+        // If it exists, show a message and don't add it
+        alert("You already have a " + name + " Living Dex started!");
+    } else {
+        // If it's new, add it to the list
+        savedGames.push({ 
+            name: name, 
+            img: img, 
+            date: new Date().toLocaleDateString() 
+        });
+        localStorage.setItem('myDexes', JSON.stringify(savedGames));
+        
+        // Redirect back to the dashboard
+        window.location.href = 'dex.html';
+    }
+        }
+    </script>
+</body>
+</html>
