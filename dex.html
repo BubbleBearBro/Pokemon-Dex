@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Livingdex Tracker</title>
+    <style>
+        body { background: #0b132b; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px 20px; }
+        #dex-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 1200px; }
+        
+        .game-card { background: #1c2541; border: 2px solid #1e3a5f; border-radius: 18px; width: 240px; padding: 15px; text-align: center; position: relative; transition: 0.3s; }
+        .game-card:hover { border-color: #4cc9f0; transform: translateY(-5px); }
+        
+        .game-card img.cover-art { width: 100%; border-radius: 10px; margin-bottom: 12px; }
+        .game-title { color: #4cc9f0; font-weight: bold; margin: 5px 0 15px 0; font-size: 1.1rem; }
+        
+        .stats-row { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin: 10px 0; 
+            font-weight: bold; 
+            font-size: 1rem;
+        }
+        .stat-item { display: flex; align-items: center; gap: 6px; }
+
+        .icon-img { width: 20px; height: 20px; object-fit: contain; }
+
+        .update-text { 
+            font-style: italic; 
+            font-size: 0.75rem; 
+            color: #8d99ae; 
+            margin-top: 10px; 
+            line-height: 1.4;
+        }
+
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); border: none; color: white; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: none; z-index: 10; }
+        .game-card:hover .delete-btn { display: block; }
+
+        /* Button Container and Styles */
+        .btn-group { margin-top: 50px; display: flex; gap: 20px; margin-bottom: 20px; }
+        .btn { padding: 12px 30px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.2s; font-family: inherit; }
+        
+        .btn-black { background: #000000; color: white; border: 1px solid #4cc9f0; }
+        .btn-white { background: white; color: black; border: 1px solid white; }
+        
+        /* New Return Home Button Style */
+        .btn-outline { 
+            background: transparent; 
+            color: #005dfd; 
+            border: 1px solid #0464e2; 
+            font-size: 0.85rem;
+            padding: 12px 60px;
+        }
+        .btn-outline:hover { border-color: #4cc9f0; color: #4cc9f0; }
+
+        .btn:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <h1>Livingdex Tracker</h1>
+    <div id="dex-grid"></div>
+
+    <div class="btn-group">
+        <a href="add-game.html" class="btn btn-black">+ Add Game</a>
+        <button class="btn btn-white" onclick="clearAll()">Reset Tracker</button>
+    </div>
+
+    <a href="index.html" class="btn btn-outline">Return to Home</a>
+
+    <script>
+        const gameDataInfo = {
+            "Red": { total: 151, boxes: 8 },
+            "Blue": { total: 151, boxes: 8 },
+            "Yellow": { total: 151, boxes: 8 },
+            "Gold": { total: 276, boxes: 15 },
+            "Silver": { total: 276, boxes: 15 },
+            "Crystal": { total: 276, boxes: 15 },
+            "Ruby": { total: 413, boxes: 14 },
+            "Sapphire": { total: 413, boxes: 14 },    
+            "Emerald": { total: 416, boxes: 14 },
+            "FireRed": { total: 415, boxes: 14 },
+            "LeafGreen": { total: 415, boxes: 14 },
+            "Diamond": { total: 623, boxes: 22 },
+            "Pearl": { total: 623, boxes: 22 },
+            "Platinum": { total: 629, boxes: 22 },
+            "HeartGold": { total: 629, boxes: 22 },
+            "SoulSilver": { total: 629, boxes: 22 },
+            "Black": { total: 799, boxes: 27 },
+            "White": { total: 799, boxes: 27 },
+            "Black 2": { total: 805, boxes: 28 },
+            "White 2": { total: 805, boxes: 28 },
+            "X": { total: 925, boxes: 32 },
+            "Y": { total: 925, boxes: 32 },
+            "Omega Ruby": { total: 926, boxes: 32 },
+            "Alpha Sapphire": { total: 926, boxes: 32 },
+            "Sun": { total: 1047, boxes: 36 },
+            "Moon": { total: 1047, boxes: 36 },
+            "Ultra Sun": { total: 1057, boxes: 36 },
+            "Ultra Moon": { total: 1057, boxes: 36 },
+            "Let's Go, Pikachu!": { total: 193, boxes: 0 },
+            "Let's Go, Eevee!": { total: 193, boxes: 0 },
+            "Sword": { total: 884, boxes: 31 },
+            "Shield": { total: 884, boxes: 31 },
+            "Brilliant Diamond": { total: 630, boxes: 22 },
+            "Shining Pearl": { total: 630, boxes: 22 },
+            "Legends: Arceus": { total: 342, boxes: 12 },
+            "Scarlet": { total: 714, boxes: 24 },
+            "Violet": { total: 714, boxes: 24 },
+            "Z-A": { total: 468, boxes: 16 },
+            "Pokémon HOME": { total: 1431, boxes: 65 }
+        };
+
+        function renderGames() {
+            const grid = document.getElementById('dex-grid');
+            const savedGames = JSON.parse(localStorage.getItem('myDexes') || '[]');
+            
+            grid.innerHTML = savedGames.map((game, index) => {
+                const info = gameDataInfo[game.name] || { total: 0, boxes: 0 };
+                const caught = game.caught || 0; 
+
+                return `
+                    <div class="game-card">
+                        <button class="delete-btn" onclick="removeGame(${index})">×</button>
+                        <img src="${game.img}" alt="${game.name}" class="cover-art">
+                        
+                        <div class="stats-row">
+                            <div class="stat-item">📦 ${info.boxes}</div>
+                            <div class="stat-item">
+                                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" class="icon-img"> 
+                                ${caught} / ${info.total}
+                            </div>
+                        </div>
+
+                        <div class="game-title">${game.name} - Living Dex</div>
+                        
+                        <div class="update-text">
+                            Last updated:<br>${game.date}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeGame(index) {
+            if(confirm("Delete this Living Dex?")) {
+                let savedGames = JSON.parse(localStorage.getItem('myDexes') || '[]');
+                savedGames.splice(index, 1);
+                localStorage.setItem('myDexes', JSON.stringify(savedGames));
+                renderGames();
+            }
+        }
+
+        function clearAll() {
+            if(confirm("Are you sure you want to delete all dexes?")) {
+                localStorage.removeItem('myDexes');
+                renderGames();
+            }
+        }
+
+        window.onload = renderGames; 
+    </script>
+</body>
+</html>
