@@ -280,7 +280,7 @@ function renderGames() {
         const totalPossible = info.total + unownMax;
 
         return `
-            <a href="${gameNameToFile(game.name)}" class="card-link">
+            <a href="${gameNameToFile(/dexes/game.name)}" class="card-link">
                 <div class="game-card">
                     <button class="delete-btn"
                         onclick="event.preventDefault(); event.stopPropagation(); removeGame(${index})">×</button>
@@ -329,3 +329,4 @@ window.onload = renderGames;
 
 </body>
 </html>
+
