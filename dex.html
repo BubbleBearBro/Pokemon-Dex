@@ -3,162 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <title>Livingdex Tracker</title>
+
     <style>
-        body { background: #0b132b; color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px 20px; }
-        #dex-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 1200px; }
-        
-        .game-card { background: #1c2541; border: 2px solid #1e3a5f; border-radius: 18px; width: 240px; padding: 15px; text-align: center; position: relative; transition: 0.3s; }
-        .game-card:hover { border-color: #4cc9f0; transform: translateY(-5px); }
-        
-        .game-card img.cover-art { width: 100%; border-radius: 10px; margin-bottom: 12px; }
-        .game-title { color: #4cc9f0; font-weight: bold; margin: 5px 0 15px 0; font-size: 1.1rem; }
-        
-        .stats-row { 
-            display: flex; 
-            justify-content: center; 
-            gap: 15px; 
-            margin: 10px 0; 
-            font-weight: bold; 
+        body {
+            background: #0b132b;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px;
+        }
+
+        #dex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* CARD */
+        .game-card {
+            background: #1c2541;
+            border: 2px solid #1e3a5f;
+            border-radius: 18px;
+            width: 240px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            border-color: #4cc9f0;
+            transform: translateY(-5px);
+        }
+
+        .game-card img.cover-art {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .game-title {
+            color: #4cc9f0;
+            font-weight: bold;
+            margin: 5px 0 15px 0;
+            font-size: 1.1rem;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+            font-weight: bold;
             font-size: 1rem;
         }
-        .stat-item { display: flex; align-items: center; gap: 6px; }
 
-        .icon-img { width: 20px; height: 20px; object-fit: contain; }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-        .update-text { 
-            font-style: italic; 
-            font-size: 0.75rem; 
-            color: #8d99ae; 
-            margin-top: 10px; 
+        .icon-img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .update-text {
+            font-style: italic;
+            font-size: 0.75rem;
+            color: #8d99ae;
+            margin-top: 10px;
             line-height: 1.4;
         }
 
-        .delete-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,0,0,0.7); border: none; color: white; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: none; z-index: 10; }
-        .game-card:hover .delete-btn { display: block; }
+        /* DELETE BUTTON */
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,0,0,0.75);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: none;
+            z-index: 10;
+        }
 
-        /* Button Container and Styles */
-        .btn-group { margin-top: 50px; display: flex; gap: 20px; margin-bottom: 20px; }
-        .btn { padding: 12px 30px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.2s; font-family: inherit; }
-        
-        .btn-black { background: #000000; color: white; border: 1px solid #4cc9f0; }
-        .btn-white { background: white; color: black; border: 1px solid white; }
-        
-        /* New Return Home Button Style */
-        .btn-outline { 
-            background: transparent; 
-            color: #005dfd; 
-            border: 1px solid #0464e2; 
+        .game-card:hover .delete-btn {
+            display: block;
+        }
+
+        /* BUTTONS */
+        .btn-group {
+            margin-top: 50px;
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-black {
+            background: #000;
+            color: white;
+            border: 1px solid #4cc9f0;
+        }
+
+        .btn-white {
+            background: white;
+            color: black;
+            border: 1px solid white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #005dfd;
+            border: 1px solid #0464e2;
             font-size: 0.85rem;
             padding: 12px 60px;
         }
-        .btn-outline:hover { border-color: #4cc9f0; color: #4cc9f0; }
 
-        .btn:hover { opacity: 0.8; }
+        .btn-outline:hover {
+            border-color: #4cc9f0;
+            color: #4cc9f0;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        /* LINK RESET */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+        }
     </style>
 </head>
+
 <body>
 
-    <h1>Livingdex Tracker</h1>
-    <div id="dex-grid"></div>
+<h1>Livingdex Tracker</h1>
 
-    <div class="btn-group">
-        <a href="add-game.html" class="btn btn-black">+ Add Game</a>
-        <button class="btn btn-white" onclick="clearAll()">Reset Tracker</button>
-    </div>
+<div id="dex-grid"></div>
 
-    <a href="index.html" class="btn btn-outline">Return to Home</a>
+<div class="btn-group">
+    <a href="add-game.html" class="btn btn-black">+ Add Game</a>
+    <button class="btn btn-white" onclick="clearAll()">Reset Tracker</button>
+</div>
 
-    <script>
-        const gameDataInfo = {
-            "Red": { total: 151, boxes: 8 },
-            "Blue": { total: 151, boxes: 8 },
-            "Yellow": { total: 151, boxes: 8 },
-            "Gold": { total: 276, boxes: 15 },
-            "Silver": { total: 276, boxes: 15 },
-            "Crystal": { total: 276, boxes: 15 },
-            "Ruby": { total: 413, boxes: 14 },
-            "Sapphire": { total: 413, boxes: 14 },    
-            "Emerald": { total: 416, boxes: 14 },
-            "FireRed": { total: 415, boxes: 14 },
-            "LeafGreen": { total: 415, boxes: 14 },
-            "Diamond": { total: 623, boxes: 22 },
-            "Pearl": { total: 623, boxes: 22 },
-            "Platinum": { total: 629, boxes: 22 },
-            "HeartGold": { total: 629, boxes: 22 },
-            "SoulSilver": { total: 629, boxes: 22 },
-            "Black": { total: 799, boxes: 27 },
-            "White": { total: 799, boxes: 27 },
-            "Black 2": { total: 805, boxes: 28 },
-            "White 2": { total: 805, boxes: 28 },
-            "X": { total: 925, boxes: 32 },
-            "Y": { total: 925, boxes: 32 },
-            "Omega Ruby": { total: 926, boxes: 32 },
-            "Alpha Sapphire": { total: 926, boxes: 32 },
-            "Sun": { total: 1047, boxes: 36 },
-            "Moon": { total: 1047, boxes: 36 },
-            "Ultra Sun": { total: 1057, boxes: 36 },
-            "Ultra Moon": { total: 1057, boxes: 36 },
-            "Let's Go, Pikachu!": { total: 193, boxes: 0 },
-            "Let's Go, Eevee!": { total: 193, boxes: 0 },
-            "Sword": { total: 884, boxes: 31 },
-            "Shield": { total: 884, boxes: 31 },
-            "Brilliant Diamond": { total: 630, boxes: 22 },
-            "Shining Pearl": { total: 630, boxes: 22 },
-            "Legends: Arceus": { total: 342, boxes: 12 },
-            "Scarlet": { total: 714, boxes: 24 },
-            "Violet": { total: 714, boxes: 24 },
-            "Z-A": { total: 468, boxes: 16 },
-            "Pokémon HOME": { total: 1431, boxes: 65 }
-        };
+<a href="index.html" class="btn btn-outline">Return to Home</a>
 
-        function renderGames() {
-            const grid = document.getElementById('dex-grid');
-            const savedGames = JSON.parse(localStorage.getItem('myDexes') || '[]');
-            
-            grid.innerHTML = savedGames.map((game, index) => {
-                const info = gameDataInfo[game.name] || { total: 0, boxes: 0 };
-                const caught = game.caught || 0; 
+<script>
+/* =========================
+   GAME CONFIG (ALL GAMES)
+========================= */
 
-                return `
-                    <div class="game-card">
-                        <button class="delete-btn" onclick="removeGame(${index})">×</button>
-                        <img src="${game.img}" alt="${game.name}" class="cover-art">
-                        
-                        <div class="stats-row">
-                            <div class="stat-item">📦 ${info.boxes}</div>
-                            <div class="stat-item">
-                                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" class="icon-img"> 
-                                ${caught} / ${info.total}
-                            </div>
-                        </div>
+const gameDataInfo = {
+    "Red": { total: 151, boxes: 8, generation: 1, key: "dex_red_v1" },
+    "Blue": { total: 151, boxes: 8, generation: 1, key: "dex_blue_v1" },
+    "Yellow": { total: 151, boxes: 8, generation: 1, key: "dex_yellow_v1" },
 
-                        <div class="game-title">${game.name} - Living Dex</div>
-                        
-                        <div class="update-text">
-                            Last updated:<br>${game.date}
+    "Gold": { total: 251, boxes: 14, generation: 2, key: "dex_gold_v1" },
+    "Silver": { total: 251, boxes: 14, generation: 2, key: "dex_silver_v1" },
+    "Crystal": { total: 251, boxes: 14, generation: 2, key: "dex_crystal_v1" },
+
+    "Ruby": { total: 386, boxes: 14, generation: 3, key: "dex_ruby_v1" },
+    "Sapphire": { total: 386, boxes: 14, generation: 3, key: "dex_sapphire_v1" },
+    "Emerald": { total: 386, boxes: 14, generation: 3, key: "dex_emerald_v1" },
+    "FireRed": { total: 386, boxes: 14, generation: 3, key: "dex_firered_v1" },
+    "LeafGreen": { total: 386, boxes: 14, generation: 3, key: "dex_leafgreen_v1" },
+
+    "Diamond": { total: 493, boxes: 22, generation: 4, key: "dex_diamond_v1" },
+    "Pearl": { total: 493, boxes: 22, generation: 4, key: "dex_pearl_v1" },
+    "Platinum": { total: 493, boxes: 22, generation: 4, key: "dex_platinum_v1" },
+    "HeartGold": { total: 493, boxes: 22, generation: 4, key: "dex_heartgold_v1" },
+    "SoulSilver": { total: 493, boxes: 22, generation: 4, key: "dex_soulsilver_v1" },
+
+    "Black": { total: 649, boxes: 27, generation: 5, key: "dex_black_v1" },
+    "White": { total: 649, boxes: 27, generation: 5, key: "dex_white_v1" },
+    "Black 2": { total: 649, boxes: 28, generation: 5, key: "dex_black2_v1" },
+    "White 2": { total: 649, boxes: 28, generation: 5, key: "dex_white2_v1" },
+
+    "X": { total: 721, boxes: 32, generation: 6, key: "dex_x_v1" },
+    "Y": { total: 721, boxes: 32, generation: 6, key: "dex_y_v1" },
+    "Omega Ruby": { total: 721, boxes: 32, generation: 6, key: "dex_omegaruby_v1" },
+    "Alpha Sapphire": { total: 721, boxes: 32, generation: 6, key: "dex_alphasapphire_v1" },
+
+    "Sun": { total: 809, boxes: 36, generation: 7, key: "dex_sun_v1" },
+    "Moon": { total: 809, boxes: 36, generation: 7, key: "dex_moon_v1" },
+    "Ultra Sun": { total: 807, boxes: 36, generation: 7, key: "dex_ultrasun_v1" },
+    "Ultra Moon": { total: 807, boxes: 36, generation: 7, key: "dex_ultramoon_v1" },
+
+    "Let's Go, Pikachu!": { total: 153, boxes: 0, generation: 7, key: "dex_letsgopikachu_v1" },
+    "Let's Go, Eevee!": { total: 153, boxes: 0, generation: 7, key: "dex_letsgoeevee_v1" },
+
+    "Sword": { total: 898, boxes: 31, generation: 8, key: "dex_sword_v1" },
+    "Shield": { total: 898, boxes: 31, generation: 8, key: "dex_shield_v1" },
+
+    "Brilliant Diamond": { total: 493, boxes: 22, generation: 8, key: "dex_brilliantdiamond_v1" },
+    "Shining Pearl": { total: 493, boxes: 22, generation: 8, key: "dex_shiningpearl_v1" },
+
+    "Legends: Arceus": { total: 242, boxes: 12, generation: 8, key: "dex_legendsarceus_v1" },
+
+    "Scarlet": { total: 1017, boxes: 24, generation: 9, key: "dex_scarlet_v1" },
+    "Violet": { total: 1017, boxes: 24, generation: 9, key: "dex_violet_v1" },
+
+    "Pokémon HOME": { total: 1025, boxes: 65, generation: 9, key: "dex_home_v1" }
+};
+
+const UNOWN_KEY = "dex_storage_unown_global";
+
+/* =========================
+   HELPERS
+========================= */
+
+function countOwned(key) {
+    const data = JSON.parse(localStorage.getItem(key)) || {};
+    return Object.values(data).filter(v => v > 0).length;
+}
+
+function countUnownOwned() {
+    const data = JSON.parse(localStorage.getItem(UNOWN_KEY)) || {};
+    return Object.values(data).filter(v => v > 0).length;
+}
+
+function getUnownMax(gen) {
+    if (gen < 2) return 0;
+    if (gen === 2) return 25;
+    return 27;
+}
+
+function gameNameToFile(name) {
+    return name.toLowerCase()
+        .replace(/é/g, "e")
+        .replace(/[^a-z0-9]/g, "") + ".html";
+}
+
+/* =========================
+   RENDER
+========================= */
+
+function renderGames() {
+    const grid = document.getElementById("dex-grid");
+    const savedGames = JSON.parse(localStorage.getItem("myDexes") || "[]");
+
+    grid.innerHTML = savedGames.map((game, index) => {
+        const info = gameDataInfo[game.name];
+        if (!info) return "";
+
+        const mainOwned = countOwned(info.key);
+        const unownOwned = countUnownOwned();
+        const unownMax = getUnownMax(info.generation);
+
+        const totalOwned = mainOwned + unownOwned;
+        const totalPossible = info.total + unownMax;
+
+        return `
+            <a href="${gameNameToFile(game.name)}" class="card-link">
+                <div class="game-card">
+                    <button class="delete-btn"
+                        onclick="event.preventDefault(); event.stopPropagation(); removeGame(${index})">×</button>
+
+                    <img src="${game.img}" class="cover-art">
+
+                    <div class="stats-row">
+                        <div class="stat-item">📦 ${info.boxes}</div>
+                        <div class="stat-item">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" class="icon-img">
+                            ${totalOwned} / ${totalPossible}
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
 
-        function removeGame(index) {
-            if(confirm("Delete this Living Dex?")) {
-                let savedGames = JSON.parse(localStorage.getItem('myDexes') || '[]');
-                savedGames.splice(index, 1);
-                localStorage.setItem('myDexes', JSON.stringify(savedGames));
-                renderGames();
-            }
-        }
+                    <div class="game-title">${game.name} - Living Dex</div>
+                    <div class="update-text">Last updated:<br>${game.date}</div>
+                </div>
+            </a>
+        `;
+    }).join("");
+}
 
-        function clearAll() {
-            if(confirm("Are you sure you want to delete all dexes?")) {
-                localStorage.removeItem('myDexes');
-                renderGames();
-            }
-        }
+/* =========================
+   DELETE / RESET
+========================= */
 
-        window.onload = renderGames; 
-    </script>
+function removeGame(index) {
+    if (confirm("Delete this Living Dex?")) {
+        const games = JSON.parse(localStorage.getItem("myDexes") || "[]");
+        games.splice(index, 1);
+        localStorage.setItem("myDexes", JSON.stringify(games));
+        renderGames();
+    }
+}
+
+function clearAll() {
+    if (confirm("Delete ALL Living Dex data?")) {
+        localStorage.clear();
+        renderGames();
+    }
+}
+
+window.onload = renderGames;
+</script>
+
+
 </body>
 </html>
