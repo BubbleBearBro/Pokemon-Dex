@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Living Dex</title>
+    <style>
+        :root {
+            --bg-dark: #0b132b; 
+            --card-bg: #1c2541; 
+            --border-blue: #1e3a5f;
+            --accent-cyan: #4cc9f0;
+            --caught-green: #2d6a4f;
+            --caught-border: #52b788;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-dark); 
+            padding: 0; margin: 0; color: #ffffff;
+        }
+
+        /* --- STICKY MASTER HEADER --- */
+        .master-header {
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            background-color: var(--bg-dark);
+            padding: 15px 0; 
+            border-bottom: 2px solid var(--border-blue);
+        }
+
+        .stats-container {
+            max-width: 400px; 
+            margin: 0 auto; 
+            text-align: center;
+            padding: 15px; 
+            border: 2px solid var(--border-blue);
+            background: var(--card-bg); 
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+            display: flex;         
+            align-items: center;   
+            text-align: CENTER;      
+            gap: 30px;
+        }
+        
+        .game-cover {
+             width: 140px;
+            height: 140px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid #3a506b;
+        }
+
+        .stats-row { 
+            justify-content: flex-start; 
+            margin-top: 15px;
+        }
+
+        .stats-row.center {
+            justify-content: center;
+            text-align: center;
+        }
+
+        h2 { margin: 0; font-size: 1.4rem; color: var(--accent-cyan); letter-spacing: 2px; }
+        .stats-label { font-weight: bold; font-size: 1.1rem; color: #ffffff; text-align: center; }
+
+        .back-button {
+            display: inline-block;
+            color: #8d99ae; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 0.85rem;
+            border: 1px solid var(--border-blue); 
+            background: rgba(11, 19, 43, 0.8);
+            padding: 8px 20px; 
+            border-radius: 30px; 
+            transition: 0.3s;
+            margin-top: 15px;
+
+        }
+
+        .back-button:hover { 
+            color: var(--accent-cyan); 
+            border-color: var(--accent-cyan);
+            background: var(--border-blue);
+        }
+
+        /* --- THE FLEX GRID (Horizontal Distribution Fix) --- */
+        .section-title { text-align: center; margin: 40px 0 20px; color: var(--accent-cyan); }
+        
+        .dex-grid { 
+            display: flex;
+            flex-wrap: wrap;       /* Allows items to wrap to next line */
+            justify-content: center; /* Centers items horizontally in the row */
+            gap: 12px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 0 20px 40px 20px;
+        }
+
+        /* --- BOX STYLING --- */
+        .pokemon { 
+            background: var(--card-bg); 
+            border: 2px solid var(--border-blue); 
+            border-radius: 15px; 
+            padding: 12px; 
+            text-align: center; 
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            opacity: 0.5;
+            filter: grayscale(100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 185px;
+            width: 120px; /* Fixed width so boxes stay consistent */
+        }
+
+        .pokemon.owned { 
+            background: var(--caught-green); 
+            border-color: var(--caught-border); 
+            opacity: 1; 
+            filter: grayscale(0%);
+            box-shadow: 0 4px 15px rgba(82, 183, 136, 0.4);
+        }
+
+        .pokemon img { width: 75px; height: 75px; object-fit: contain; align-self: center; }
+        .pkmn-number { font-size: 0.7rem; color: #8d99ae; display: block; }
+        .name { font-size: 0.85rem; font-weight: bold; display: block; text-transform: capitalize; }
+
+        .controls { 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 8px; margin-top: 10px; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 4px;
+        }
+
+        .btn { 
+            background: #ffffff; border: none; border-radius: 50%; 
+            width: 22px; height: 22px; cursor: pointer; font-weight: bold; 
+            display: flex; align-items: center; justify-content: center;
+            color: #0b132b;
+        }
+
+        .count-val { font-size: 13px; min-width: 15px; font-weight: bold; color: white; }
+
+        .hidden { display: none !important; }
+        hr { margin: 60px 0; border: 0; border-top: 2px solid var(--border-blue); }
+
+        @media (max-width: 600px) {
+            .pokemon { 
+                width: 100px;
+                min-height: 160px; 
+                padding: 8px; 
+            }
+            .stats-row { gap: 10px; flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="master-header">
+        <div class="stats-container">
+            <img src="https://classic.pokepc.net/_next/image?url=%2Fimages%2Fgames%2Ftiles%2Frb-b.jpeg&w=256&q=75" class="game-cover" alt="Red Version">
+
+            <div class="stats-content">
+                <h2 id="gameTitleDisplay">Red - Living Dex</h2>
+                <div class="stats-row">
+                    <span class="stats-label" id="mainProgress"> 0 / 151</span>
+                    <span class="stats-label" id="unownStatLabel">Optional: 0 / 28</span>
+                </div>
+                <a href="dex.html" class="back-button">← Back to Living Dex Home</a>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Kanto Collection</h2>
+    <div class="dex-grid" id="mainGrid"></div>
+
+    <div id="JohntoSection">
+        <hr>
+    <h2 class="section-title">Johto Collection</h2>
+    <div class="dex-grid" id="johtoGrid"></div>
+    </div>
+
+    <div id="HoeenSection">
+        <hr>
+        <h2 class="section-title">Hoenn Collection</h2>
+        <div class="dex-grid" id="hoeengrid"></div>
+    </div>
+
+    <div id="SinnohSection">
+        <hr>
+        <h2 class="section-title">Sinnoh Collection</h2>
+        <div class="dex-grid" id="sinnohgrid"></div>
+    </div>
+
+    <div id="UnovaSection">
+        <hr>
+        <h2 class="section-title">Unova Collection</h2>
+        <div class="dex-grid" id="unovagrid"></div>
+    </div>
+
+    <div id="KalosSection">
+        <hr>
+        <h2 class="section-title">Kalos Collection</h2>
+        <div class="dex-grid" id="kalosgrid"></div>
+    </div>
+
+    <div id="AlolaSection">
+        <hr>
+        <h2 class="section-title">Alola Collection</h2>
+        <div class="dex-grid" id="alolagrid"></div>
+    </div>
+
+    <div id="GalarSection">
+        <hr>
+        <h2 class="section-title">Galar Collection</h2>
+        <div class="dex-grid" id="galargrid"></div>
+    </div>
+
+    <div id="PaldeaSection">
+        <hr>
+        <h2 class="section-title">Paldea Collection</h2>
+        <div class="dex-grid" id="paldeagrid"></div>
+    </div>
+
+    <div id="unownSection">
+        <hr>
+        <h2 class="section-title">Unown Alphabet</h2>
+        <div class="dex-grid" id="unownGrid"></div>
+    </div>
+
+    <script>
+        // --- PREFAB CONFIGURATION ---
+        const gameTitle = "Blue";
+        const storageKey = "dex_blue_v1";
+        const unownEnabled = false;
+        const JohntoEnabled = false;
+        const HoeenEnabled = false;
+        const SinnohEnabled = false;
+        const UnovaEnabled = false;
+        const KalosEnabled = false;
+        const AlolaEnabled = false;
+        const GalarEnabled = false;
+        const PaldeaEnabled = false;
+        // ----------------------------
+
+        document.getElementById('gameTitleDisplay').innerText = gameTitle + " - Living Dex";
+        
+        const UNOWN_KEY = 'dex_storage_unown_global';
+        let mainData = JSON.parse(localStorage.getItem(storageKey)) || {};
+        let unownData = JSON.parse(localStorage.getItem(UNOWN_KEY)) || {};
+
+        const kantoNames = ["Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Blastoise", "Caterpie", "Metapod", "Butterfree", "Weedle", "Kakuna", "Beedrill", "Pidgey", "Pidgeotto", "Pidgeot", "Rattata", "Raticate", "Spearow", "Fearow", "Ekans", "Arbok", "Pikachu", "Raichu", "Sandshrew", "Sandslash", "Nidoran-F", "Nidorina", "Nidoqueen", "Nidoran-M", "Nidorino", "Nidoking", "Clefairy", "Clefable", "Vulpix", "Ninetales", "Jigglypuff", "Wigglytuff", "Zubat", "Golbat", "Oddish", "Gloom", "Vileplume", "Paras", "Parasect", "Venonat", "Venomoth", "Diglett", "Dugtrio", "Meowth", "Persian", "Psyduck", "Golduck", "Mankey", "Primeape", "Growlithe", "Arcanine", "Poliwag", "Poliwhirl", "Poliwrath", "Abra", "Kadabra", "Alakazam", "Machop", "Machoke", "Machamp", "Bellsprout", "Weepinbell", "Victreebel", "Tentacool", "Tentacruel", "Geodude", "Graveler", "Golem", "Ponyta", "Rapidash", "Slowpoke", "Slowbro", "Magnemite", "Magneton", "Farfetchd", "Doduo", "Dodrio", "Seel", "Dewgong", "Grimer", "Muk", "Shellder", "Cloyster", "Gastly", "Haunter", "Gengar", "Onix", "Drowzee", "Hypno", "Krabby", "Kingler", "Voltorb", "Electrode", "Exeggcute", "Exeggutor", "Cubone", "Marowak", "Hitmonlee", "Hitmonchan", "Lickitung", "Koffing", "Weezing", "Rhyhorn", "Rhydon", "Chansey", "Tangela", "Kangaskhan", "Horsea", "Seadra", "Goldeen", "Seaking", "Staryu", "Starmie", "Mr-Mime", "Scyther", "Jynx", "Electabuzz", "Magmar", "Pinsir", "Tauros", "Magikarp", "Gyarados", "Lapras", "Ditto", "Eevee", "Vaporeon", "Jolteon", "Flareon", "Porygon", "Omanyte", "Omastar", "Kabuto", "Kabutops", "Aerodactyl", "Snorlax", "Articuno", "Zapdos", "Moltres", "Dratini", "Dragonair", "Dragonite", "Mewtwo", "Mew"];
+        const johtoNames = ["Chikorita", "Bayleef", "Meganium", "Cyndaquil", "Quilava", "Typhlosion", "Totodile", "Croconaw", "Feraligatr", "Sentret", "Furret", "Hoothoot", "Noctowl", "Ledyba", "Ledian", "Spinarak", "Ariados", "Crobat", "Chinchou", "Lanturn", "Pichu", "Cleffa", "Igglybuff", "Togepi", "Togetic", "Natu", "Xatu", "Mareep", "Flaaffy", "Ampharos", "Bellossom", "Marill", "Azumarill", "Sudowoodo", "Politoed", "Hoppip", "Skiploom", "Jumpluff", "Aipom", "Sunkern", "Sunflora", "Yanma", "Wooper", "Quagsire", "Espeon", "Umbreon", "Murkrow", "Slowking", "Misdreavus", "Unown", "Wobbuffet", "Girafarig", "Pineco", "Forretress", "Dunsparce", "Gligar", "Steelix", "Snubbull", "Granbull", "Qwilfish", "Scizor", "Shuckle", "Heracross", "Sneasel", "Teddiursa", "Ursaring", "Slugma", "Magcargo", "Swinub", "Piloswine", "Corsola", "Remoraid", "Octillery", "Delibird", "Mantine", "Skarmory", "Houndour", "Houndoom", "Kingdra", "Phanpy", "Donphan", "Porygon2", "Stantler", "Smeargle", "Tyrogue", "Hitmontop", "Smoochum", "Elekid", "Magby", "Miltank", "Blissey", "Raikou", "Entei", "Suicune", "Larvitar", "Pupitar", "Tyranitar", "Lugia", "Ho-Oh", "Celebi"];
+        const hoennNames = ["Treecko","Grovyle","Sceptile","Torchic","Combusken","Blaziken","Mudkip","Marshtomp","Swampert","Poochyena","Mightyena","Zigzagoon","Linoone","Wurmple","Silcoon","Beautifly","Cascoon","Dustox","Lotad","Lombre","Ludicolo","Seedot","Nuzleaf","Shiftry","Taillow","Swellow","Wingull","Pelipper","Ralts","Kirlia","Gardevoir","Surskit","Masquerain","Shroomish","Breloom","Slakoth","Vigoroth","Slaking","Nincada","Ninjask","Shedinja","Whismur","Loudred","Exploud","Makuhita","Hariyama","Azurill","Nosepass","Skitty","Delcatty","Sableye","Mawile","Aron","Lairon","Aggron","Meditite","Medicham","Electrike","Manectric","Plusle","Minun","Volbeat","Illumise","Roselia","Gulpin","Swalot","Carvanha","Sharpedo","Wailmer","Wailord","Numel","Camerupt","Torkoal","Spoink","Grumpig","Spinda","Trapinch","Vibrava","Flygon","Cacnea","Cacturne","Swablu","Altaria","Zangoose","Seviper","Lunatone","Solrock","Barboach","Whiscash","Corphish","Crawdaunt","Baltoy","Claydol","Lileep","Cradily","Anorith","Armaldo","Feebas","Milotic","Castform","Kecleon","Shuppet","Banette","Duskull","Dusclops","Tropius","Chimecho","Absol","Wynaut","Snorunt","Glalie","Spheal","Sealeo","Walrein","Clamperl","Huntail","Gorebyss","Relicanth","Luvdisc","Bagon","Shelgon","Salamence","Beldum","Metang","Metagross","Regirock","Regice","Registeel","Latias","Latios","Kyogre","Groudon","Rayquaza","Jirachi","Deoxys"];
+        const sinnohNames = ["Turtwig","Grotle","Torterra","Chimchar","Monferno","Infernape","Piplup","Prinplup","Empoleon","Starly","Staravia","Staraptor","Bidoof","Bibarel","Kricketot","Kricketune","Shinx","Luxio","Luxray","Budew","Roserade","Cranidos","Rampardos","Shieldon","Bastiodon","Burmy","Wormadam","Mothim","Combee","Vespiquen","Pachirisu","Buizel","Floatzel","Cherubi","Cherrim","Shellos","Gastrodon","Ambipom","Drifloon","Drifblim","Buneary","Lopunny","Mismagius","Honchkrow","Glameow","Purugly","Chingling","Stunky","Skuntank","Bronzor","Bronzong","Bonsly","Mime-Jr","Happiny","Chatot","Spiritomb","Gible","Gabite","Garchomp","Munchlax","Riolu","Lucario","Hippopotas","Hippowdon","Skorupi","Drapion","Croagunk","Toxicroak","Carnivine","Finneon","Lumineon","Mantyke","Snover","Abomasnow","Weavile","Magnezone","Lickilicky","Rhyperior","Tangrowth","Electivire","Magmortar","Togekiss","Yanmega","Leafeon","Glaceon","Gliscor","Mamoswine","Porygon-Z","Gallade","Probopass","Dusknoir","Froslass","Rotom","Uxie","Mesprit","Azelf","Dialga","Palkia","Heatran","Regigigas","Giratina","Cresselia","Phione","Manaphy","Darkrai","Shaymin","Arceus"];
+        const unovaNames = ["Victini","Snivy","Servine","Serperior","Tepig","Pignite","Emboar","Oshawott","Dewott","Samurott","Patrat","Watchog","Lillipup","Herdier","Stoutland","Purrloin","Liepard","Pansage","Simisage","Pansear","Simisear","Panpour","Simipour","Munna","Musharna","Pidove","Tranquill","Unfezant","Blitzle","Zebstrika","Roggenrola","Boldore","Gigalith","Woobat","Swoobat","Drilbur","Excadrill","Audino","Timburr","Gurdurr","Conkeldurr","Tympole","Palpitoad","Seismitoad","Throh","Sawk","Sewaddle","Swadloon","Leavanny","Venipede","Whirlipede","Scolipede","Cottonee","Whimsicott","Petilil","Lilligant","Basculin","Sandile","Krokorok","Krookodile","Darumaka","Darmanitan","Maractus","Dwebble","Crustle","Scraggy","Scrafty","Sigilyph","Yamask","Cofagrigus","Tirtouga","Carracosta","Archen","Archeops","Trubbish","Garbodor","Zorua","Zoroark","Minccino","Cinccino","Gothita","Gothorita","Gothitelle","Solosis","Duosion","Reuniclus","Ducklett","Swanna","Vanillite","Vanillish","Vanilluxe","Deerling","Sawsbuck","Emolga","Karrablast","Escavalier","Foongus","Amoonguss","Frillish","Jellicent","Alomomola","Joltik","Galvantula","Ferroseed","Ferrothorn","Klink","Klang","Klinklang","Tynamo","Eelektrik","Eelektross","Elgyem","Beheeyem","Litwick","Lampent","Chandelure","Axew","Fraxure","Haxorus","Cubchoo","Beartic","Cryogonal","Shelmet","Accelgor","Stunfisk","Mienfoo","Mienshao","Druddigon","Golett","Golurk","Pawniard","Bisharp","Bouffalant","Rufflet","Braviary","Vullaby","Mandibuzz","Heatmor","Durant","Deino","Zweilous","Hydreigon","Larvesta","Volcarona","Cobalion","Terrakion","Virizion","Tornadus","Thundurus","Reshiram","Zekrom","Landorus","Kyurem","Keldeo","Meloetta","Genesect"];
+        const kalosNames = ["Chespin","Quilladin","Chesnaught","Fennekin","Braixen","Delphox","Froakie","Frogadier","Greninja","Bunnelby","Diggersby","Fletchling","Fletchinder","Talonflame","Scatterbug","Spewpa","Vivillon","Litleo","Pyroar","Flabebe","Floette","Florges","Skiddo","Gogoat","Pancham","Pangoro","Furfrou","Espurr","Meowstic","Honedge","Doublade","Aegislash","Spritzee","Aromatisse","Swirlix","Slurpuff","Inkay","Malamar","Binacle","Barbaracle","Skrelp","Dragalge","Clauncher","Clawitzer","Helioptile","Heliolisk","Tyrunt","Tyrantrum","Amaura","Aurorus","Sylveon","Hawlucha","Dedenne","Carbink","Goomy","Sliggoo","Goodra","Klefki","Phantump","Trevenant","Pumpkaboo","Gourgeist","Bergmite","Avalugg","Noibat","Noivern","Xerneas","Yveltal","Zygarde","Diancie","Hoopa","Volcanion"];
+        const alolaNames = ["Rowlet", "Dartrix", "Decidueye", "Litten", "Torracat", "Incineroar", "Popplio", "Brionne", "Primarina", "Pikipek", "Trumbeak", "Toucannon", "Yungoos", "Gumshoos", "Grubbin", "Charjabug", "Vikavolt", "Crabrawler", "Crabominable", "Oricorio", "Cutiefly", "Ribombee", "Rockruff", "Lycanroc", "Wishiwashi", "Mareanie", "Toxapex", "Mudbray", "Mudsdale", "Dewpider", "Araquanid", "Fomantis", "Lurantis", "Morelull", "Shiinotic", "Salandit", "Salazzle", "Stufful", "Bewear", "Bounsweet", "Steenee", "Tsareena", "Comfey", "Oranguru", "Passimian", "Wimpod", "Golisopod", "Sandygast", "Palossand", "Pyukumuku", "Type-Null", "Silvally", "Minior", "Komala", "Turtonator", "Togedemaru", "Mimikyu", "Bruxish", "Drampa", "Dhelmise", "Jangmo-o", "Hakamo-o", "Kommo-o", "Tapu-Koko", "Tapu-Lele", "Tapu-Bulu", "Tapu-Fini", "Cosmog", "Cosmoem", "Solgaleo", "Lunala", "Nihilego", "Buzzwole", "Pheromosa", "Xurkitree", "Celesteela", "Kartana", "Guzzlord", "Necrozma", "Magearna", "Marshadow", "Poipole", "Naganadel", "Stakataka", "Blacephalon", "Zeraora", "Meltan", "Melmetal"];
+        const galarNames = ["Grookey", "Thwackey", "Rillaboom", "Scorbunny", "Raboot", "Cinderace", "Sobble", "Drizzile", "Inteleon", "Skwovet", "Greedent", "Rookidee", "Corvisquire", "Corviknight", "Blipbug", "Dottler", "Orbeetle", "Nickit", "Thievul", "Gossifleur", "Eldegoss", "Wooloo", "Dubwool", "Chewtle", "Drednaw", "Yamper", "Boltund", "Rolycoly", "Carkol", "Coalossal", "Applin", "Flapple", "Appletun", "Silicobra", "Sandaconda", "Cramorant", "Arrokuda", "Barraskewda", "Toxel", "Toxtricity", "Sizzlipede", "Centiskorch", "Clobbopus", "Grapploct", "Sinistea", "Polteageist", "Hatenna", "Hattrem", "Hatterene", "Impidimp", "Morgrem", "Grimmsnarl", "Obstagoon", "Perrserker", "Cursola", "Sirfetch'd", "Mr-Rime", "Runerigus", "Milcery", "Alcremie", "Falinks", "Pincurchin", "Snom", "Frosmoth", "Stonjourner", "Eiscue", "Indeedee", "Morpeko", "Cufant", "Copperajah", "Dracozolt", "Arctozolt", "Dracovish", "Arctovish", "Duraludon", "Dreepy", "Drakloak", "Dragapult", "Zacian", "Zamazenta", "Eternatus", "Kubfu", "Urshifu", "Zarude", "Regieleki", "Regidrago", "Glastrier", "Spectrier", "Calyrex", "Wyrdeer", "Kleavor", "Ursaluna", "Basculegion", "Sneasler", "Overqwil", "Enamorus"];
+        const paldeaNames = ["Sprigatito", "Floragato", "Meowscarada", "Fuecoco", "Crocalor", "Skeledirge", "Quaxly", "Quaxwell", "Quaquaval", "Lechonk", "Oinkologne", "Tarountula", "Spidops", "Nymble", "Lokix", "Pawmi", "Pawmo", "Pawmot", "Tandemaus", "Maushold", "Fidough", "Dachsbun", "Smoliv", "Dolliv", "Arboliva", "Squawkabilly", "Nacli", "Naclstack", "Garganacl", "Charcadet", "Armarouge", "Ceruledge", "Tadbulb", "Bellibolt", "Wattrel", "Kilowattrel", "Maschiff", "Mabosstiff", "Shroodle", "Graafaiai", "Bramblin", "Brambleghast", "Toedscool", "Toedscruel", "Klawf", "Capsakid", "Scovillain", "Rellor", "Rabsca", "Flittle", "Espathra", "Tinkatink", "Tinkatuff", "Tinkaton", "Wiglett", "Wugtrio", "Bombirdier", "Finizen", "Palafin", "Varoom", "Revavroom", "Cyclizar", "Orthworm", "Glimmet", "Glimmora", "Greavard", "Houndstone", "Flamigo", "Cetoddle", "Cetitan", "Veluza", "Dondozo", "Tatsugiri", "Annihilape", "Clodsire", "Farigiraf", "Dudunsparce", "Kingambit", "Great-Tusk", "Scream-Tail", "Brute-Bonnet", "Flutter-Mane", "Slither-Wing", "Sandy-Shocks", "Iron-Treads", "Iron-Bundle", "Iron-Hands", "Iron-Jugulis", "Iron-Moth", "Iron-Thorns", "Frigibax", "Arctibax", "Baxcalibur", "Gimmighoul", "Gholdengo", "Wo-Chien", "Chien-Pao", "Ting-Lu", "Chi-Yu", "Roaring-Moon", "Iron-Valiant", "Koraidon", "Miraidon", "Walking-Wake", "Iron-Leaves", "Dipplin", "Poltchageist", "Sinistcha", "Okidogi", "Munkidori", "Fezandipiti", "Ogerpon", "Archaludon", "Hydrapple", "Gouging-Fire", "Raging-Bolt", "Iron-Boulder", "Iron-Crown", "Terapagos", "Pecharunt"];
+        const unownForms = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','!','?'];
+
+        
+        function init() {
+            const mGrid = document.getElementById('mainGrid');
+            kantoNames.forEach((name, i) => {
+                const id = i + 1;
+                mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+            });
+
+            if (JohntoEnabled) {
+                const mGrid = document.getElementById('johtoGrid');
+                johtoNames.forEach((name, i) => {
+                    const id = i + 152;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('JohntoSection').classList.add('hidden');
+            }
+
+            if (HoeenEnabled) {
+                const mGrid = document.getElementById('hoeengrid');
+                hoennNames.forEach((name, i) => {
+                    const id = i + 252;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('HoeenSection').classList.add('hidden');
+            }
+
+            const statsRow = document.querySelector('.stats-row');
+
+            if (SinnohEnabled) {
+                const mGrid = document.getElementById('sinnohgrid');
+                sinnohNames.forEach((name, i) => {
+                    const id = i + 387;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('SinnohSection').classList.add('hidden');
+            }
+
+            if (UnovaEnabled) {
+                const mGrid = document.getElementById('unovagrid');
+                unovaNames.forEach((name, i) => {
+                    const id = i + 494;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('UnovaSection').classList.add('hidden');
+            }
+
+            if (KalosEnabled) {
+                const mGrid = document.getElementById('kalosgrid');
+                kalosNames.forEach((name, i) => {
+                    const id = i + 650;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('KalosSection').classList.add('hidden');
+            }
+
+            if (AlolaEnabled) {
+                const mGrid = document.getElementById('alolagrid');
+                alolaNames.forEach((name, i) => {
+                    const id = i + 722;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('AlolaSection').classList.add('hidden');
+            }
+
+            if (GalarEnabled) {
+                const mGrid = document.getElementById('galargrid');
+                galarNames.forEach((name, i) => {
+                    const id = i + 810;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('GalarSection').classList.add('hidden');
+            }
+
+            if (PaldeaEnabled) {
+                const mGrid = document.getElementById('paldeagrid');
+                paldeaNames.forEach((name, i) => {
+                    const id = i + 906;
+                    mGrid.appendChild(createCard(id, name, mainData[id] || 0, 'main'));
+                });
+            } else {
+                document.getElementById('PaldeaSection').classList.add('hidden');
+            }
+
+            if (unownEnabled) {
+                const uGrid = document.getElementById('unownGrid');
+                unownForms.forEach(form => {
+                    const qty = unownData[form] || 0;
+                    uGrid.appendChild(createCard(201, form, qty, 'unown', form));
+                });
+            } else {
+                // This is the "Else" that cleans everything up if unown is false
+                document.getElementById('unownSection').classList.add('hidden');
+                document.getElementById('unownStatLabel').classList.add('hidden');
+                statsRow.classList.add('center');
+            }
+            updateStats();
+        }
+
+        function createCard(id, name, qty, type, form = '') {
+            const card = document.createElement('div');
+            const uniqueID = type === 'main' ? id : `unown-${form}`;
+            card.id = `card-${uniqueID}`;
+            card.className = `pokemon ${qty > 0 ? 'owned' : ''}`;
+            
+            let imageForm = form;
+            if (form === '!') imageForm = 'exclamation';
+            if (form === '?') imageForm = 'question';
+
+            let imgURL = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+            if (form) {
+                imgURL = imageForm === 'a' 
+                    ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/201.png` 
+                    : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/201-${imageForm}.png`;
+            }
+
+            const displayName = type === 'unown' ? form.toUpperCase() : name;
+
+            card.innerHTML = `
+                <span class="pkmn-number">#${id.toString().padStart(3, '0')}</span>
+                <img src="${imgURL}" loading="lazy">
+                <span class="name">${displayName}</span>
+                <div class="controls">
+                    <button class="btn" onclick="updateQty('${type}', '${uniqueID}', -1)">-</button>
+                    <span class="count-val" id="qty-${uniqueID}">${qty}</span>
+                    <button class="btn" onclick="updateQty('${type}', '${uniqueID}', 1)">+</button>
+                </div>
+            `;
+            return card;
+        }
+
+        window.updateQty = function(type, id, delta) {
+            if (type === 'main') {
+                mainData[id] = Math.max(0, (mainData[id] || 0) + delta);
+                localStorage.setItem(storageKey, JSON.stringify(mainData));
+            } else {
+                unownData[id.replace('unown-', '')] = Math.max(0, (unownData[id.replace('unown-', '')] || 0) + delta);
+                localStorage.setItem(UNOWN_KEY, JSON.stringify(unownData));
+            }
+
+            const newQty = type === 'main' ? mainData[id] : unownData[id.replace('unown-', '')];
+            document.getElementById(`qty-${id}`).innerText = newQty;
+            const card = document.getElementById(`card-${id}`);
+            if (newQty > 0) card.classList.add('owned');
+            else card.classList.remove('owned');
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const mainCount = Object.values(mainData).filter(v => v > 0).length;
+            document.getElementById('mainProgress').innerText = ` ${mainCount} / 151`;
+            if (unownEnabled) {
+                const unownCount = Object.values(unownData).filter(v => v > 0).length;
+                document.getElementById('unownStatLabel').innerText = `Optional: ${unownCount} / 28`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html> 
